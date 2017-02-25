@@ -11,29 +11,24 @@
 
 import urllib2, os, random, time, facebook
 
-graph = facebook.GraphAPI('EAACEdEose0cBAFpyokHFV9wAsxDMYEdxb1RKf0tmwESVjA9qhRmIJZCueKI92F8YEjZC8Qs3Rp6VrQrwBm0BoqCUaQzvHESymoaa8Ko61Q7XsmpI2aBC1m3vefFDNm5oC0W1dsU92K1rxXJoGahxWnZAJCTfQbGbfPYzlDKVwZDZD')
+graph = facebook.GraphAPI('GET_YOUT_TOKEN_CODE')
  
 qtd   = 1000
 limit = 50
-lists = '"list":['
+lists = 'list:["'
  
 def procurar():
        
         f = open("profile.htm", "r")
-        text = f.readline()
-       
-        while 1:
-                if text.find(lists) != -1:
-                        return text
-                else:
-                        text = f.readline()
- 
-        return False
- 
+        text = f.readlines()
+        t = ''.join(text)       
+        return t.split('groups:[],list:["')[1].split('],shortProfiles:')[0].split('","')
+
+
 def filtrar(num):
         i = 0
-        lista = []
         text = procurar()
+        return text
         if text:       
                 if len(text) <= 1:
                         print "Nada encontrado..."
@@ -59,13 +54,16 @@ def profile():
         lista = filtrar(qtd)
         for x in lista:
                 if num <= limit:
-                        user = graph.get_object(id=x)
-                        nome = user['name']
-                        # nome = nome[0:6] + len(nome[6:]) * '*'
-                        if nome not in owned:
-                                print "%.2d" % num, "-", nome#, "\nPerfil: ", "http://www." + url.split("m.")[1], "\n"
-                                owned.append(nome)
-                                num += 1
+                        try:
+                                user = graph.get_object(id=x.split('-')[0])
+                                nome = user['name']
+                                # nome = nome[0:6] + len(nome[6:]) * '*'
+                                if nome not in owned:
+                                        print "%.2d" % num, "-", nome#, "\nPerfil: ", "http://www." + url.split("m.")[1], "\n"
+                                        owned.append(nome)
+                                        num += 1
+                        except:
+                                pass
                 else:
                         break
         print "\nFIM DA LISTA.\n"
